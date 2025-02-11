@@ -41,7 +41,8 @@ class VagasController extends Controller
             DB::beginTransaction();
 
             $vaga = Vagas::create([
-                'headhunter_id' => $request->headhunter_id,
+                'headhunter_id' => $request->headhunter_id ?? null,
+                'admin_id' => $request->admin_id ?? null,
                 'empresa_id' => $request->empresa_id,
                 'profissao_id'=> $request->profissao_id,
                 'titulo' => $request->titulo,
@@ -92,7 +93,8 @@ class VagasController extends Controller
             $vaga = Vagas::find($id);
 
             $vaga->update([
-                'headhunter_id' => $request->headhunter_id,
+                'headhunter_id' => $request->headhunter_id ?? null,
+                'admin_id' => $request->admin_id ?? null,
                 'empresa_id' => $request->empresa_id,
                 'profissao_id'=> $request->profissao_id,
                 'titulo' => $request->titulo,

@@ -4,6 +4,7 @@ use App\Http\Controllers\ChamadoController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProcessosController;
 use App\Http\Controllers\ProfissoesController;
+use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VagasController;
 use Illuminate\Http\Request;
@@ -47,4 +48,8 @@ Route::delete('/atualizacoes/{id}', [ChamadoController::class, 'DestroyAtualizac
 
 
 Route::post('/login', [LoginController::class, 'login']);
+
+
+//Enviar Email
+Route::post('/sendEmail', [SendEmailController::class, 'sendEmail']);
 

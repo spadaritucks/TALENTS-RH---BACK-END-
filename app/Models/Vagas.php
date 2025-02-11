@@ -12,6 +12,7 @@ class Vagas extends Model
 
     protected $fillable = [
         'headhunter_id',
+        'admin_id',
         'empresa_id',
         'profissao_id',
         'titulo',
