@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChamadosRequest; // Supondo que exista um request para validação
-use App\Models\Chamados;
+use App\Models\ChamadosAtualizacoes;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ChamadoController extends Controller
+class ChamadoAtualizacoesController extends Controller
 {
-    public function getChamados(Request $request)
+    public function getAtualizacoes(Request $request)
     {
         try {
             if ($request->query()) {
-                $query = Chamados::query();
+                $query = ChamadosAtualizacoes::query();
 
                 foreach ($request->query() as $campo => $valor) {
                     if (!empty($valor)) {
@@ -22,110 +22,110 @@ class ChamadoController extends Controller
                     }
                 }
 
-                $chamados = $query->get(); // Executa a consulta
+                $atualizacoes = $query->get(); // Executa a consulta
                 
             } else {
-                $chamados = Chamados::all();
+                $atualizacoes = ChamadosAtualizacoes::all();
             }
 
             return response()->json([
                 'success' => true,
-                'chamados' => $chamados
+                'atualizacoes' => $atualizacoes
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Erro ao consultar os chamados: " . $e->getMessage()
+                'message' => "Erro ao consultar as atualizações: " . $e->getMessage()
             ], 500);
         }
     }
 
-    public function getChamadoById(string $id)
+    public function getAtualizacaoById(string $id)
     {
         try {
-            $chamado = Chamados::findOrFail($id);
+            $atualizacao = ChamadosAtualizacoes::findOrFail($id);
 
             return response()->json([
                 'success' => true,
-                'chamado' => $chamado
+                'atualizacao' => $atualizacao
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar o chamado pelo id: ' . $e->getMessage()
+                'message' => 'Erro ao buscar a atualização pelo id: ' . $e->getMessage()
             ], 404);
         }
     }
 
-    public function createChamado(ChamadosRequest $request)
+    public function createAtualizacao(Request $request)
     {
         try {
             DB::beginTransaction();
 
-            Chamados::create([
-                'empresa_id' => $request->empresa_id,
-                'profissao_id' => $request->profissao_id,
-                'numero_vagas' => $request->numero_vagas,
-                'descricao' => $request->descricao,
-                'status' => $request->status,
+            ChamadosAtualizacoes::create([
+                'chamados_id' => $request->chamados_id,
+                'user_id' => $request->user_id,
+                'titulo' => $request->titulo,
+                'atualizacoes' => $request->atualizacoes,
+                'anexo' => $request->anexo,
             ]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Chamado criado com sucesso'
+                'message' => 'Atualização criada com sucesso'
             ], 201);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Falha ao criar o chamado: ' . $e->getMessage()
+                'message' => 'Falha ao criar a atualização: ' . $e->getMessage()
             ], 400);
         }
     }
 
-    public function updateChamado(Request $request, string $id)
+    public function updateAtualizacao(Request $request, string $id)
     {
         try {
             DB::beginTransaction();
 
-            $chamado = Chamados::findOrFail($id);
+            $atualizacao = ChamadosAtualizacoes::findOrFail($id);
 
             // Atualiza apenas os campos que foram enviados na requisição
-            $chamado->update($request->only(['empresa_id', 'profissao_id', 'numero_vagas', 'descricao', 'status']));
+            $atualizacao->update($request->only(['chamados_id', 'user_id', 'titulo', 'atualizacoes', 'anexo']));
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Chamado atualizado com sucesso'
+                'message' => 'Atualização atualizada com sucesso'
             ], 200);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Falha ao atualizar o chamado: ' . $e->getMessage()
+                'message' => 'Falha ao atualizar a atualização: ' . $e->getMessage()
             ], 400);
         }
     }
 
-    public function deleteChamado(string $id)
+    public function deleteAtualizacao(string $id)
     {
         try {
             DB::beginTransaction();
-            $chamado = Chamados::findOrFail($id);
-            $chamado->delete();
+            $atualizacao = ChamadosAtualizacoes::findOrFail($id);
+            $atualizacao->delete();
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Chamado excluído com sucesso'
+                'message' => 'Atualização excluída com sucesso'
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Falha ao excluir o chamado: ' . $e->getMessage()
+                'message' => 'Falha ao excluir a atualização: ' . $e->getMessage()
             ], 400);
         }
     }

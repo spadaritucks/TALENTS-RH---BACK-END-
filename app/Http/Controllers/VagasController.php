@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\VagasRequest; // Supondo que exista um request para validação
 use App\Models\Vagas;
 use Exception;
 use Illuminate\Http\Request;
@@ -12,21 +13,32 @@ class VagasController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getVagas(Request $request)
     {
-        try{
+        try {
+            if ($request->query()) {
+                $query = Vagas::query();
 
-            $vagas = Vagas::all();
+                foreach ($request->query() as $campo => $valor) {
+                    if (!empty($valor)) {
+                        $query->where($campo, $valor);
+                    }
+                }
+
+                $vagas = $query->get(); // Executa a consulta
+
+            } else {
+                $vagas = Vagas::all();
+            }
 
             return response()->json([
-                'status' => true,
+                'success' => true,
                 'vagas' => $vagas
             ], 200);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => 'Erro ao consultar as vagas' .$e->getMessage()
+                'success' => false,
+                'message' => 'Erro ao consultar as vagas: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -34,17 +46,16 @@ class VagasController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function createVaga(VagasRequest $request)
     {
-        try{
-
+        try {
             DB::beginTransaction();
 
             $vaga = Vagas::create([
                 'headhunter_id' => $request->headhunter_id ?? null,
                 'admin_id' => $request->admin_id ?? null,
                 'empresa_id' => $request->empresa_id,
-                'profissao_id'=> $request->profissao_id,
+                'profissao_id' => $request->profissao_id,
                 'titulo' => $request->titulo,
                 'descricao' => $request->descricao,
                 'competencias' => $request->competencias,
@@ -53,22 +64,20 @@ class VagasController extends Controller
                 'salario_minimo' => $request->salario_minimo ?? null,
                 'salario_maximo' => $request->salario_maximo ?? null,
                 'status' => $request->status,
-                'data_final' => $request->data_final 
+                'data_final' => $request->data_final
             ]);
-
 
             DB::commit();
 
-
             return response()->json([
-                'status' => true,
-                'message' => 'Vaga Criada com Sucesso'
+                'success' => true,
+                'message' => 'Vaga criada com sucesso'
             ], 201);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'status' => false,
-                'message' => 'Falha ao cadastrar a Vaga' . $e->getMessage()
+                'success' => false,
+                'message' => 'Falha ao cadastrar a vaga: ' . $e->getMessage()
             ], 400);
         }
     }
@@ -76,49 +85,47 @@ class VagasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function getVagaById(string $id)
     {
-        //
+        try {
+            $vaga = Vagas::findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'vaga' => $vaga
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao buscar a vaga pelo id: ' . $e->getMessage()
+            ], 404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateVaga(Request $request, string $id)
     {
-        try{
-
+        try {
             DB::beginTransaction();
 
-            $vaga = Vagas::find($id);
+            $vaga = Vagas::findOrFail($id);
 
-            $vaga->update([
-                'headhunter_id' => $request->headhunter_id ?? null,
-                'admin_id' => $request->admin_id ?? null,
-                'empresa_id' => $request->empresa_id,
-                'profissao_id'=> $request->profissao_id,
-                'titulo' => $request->titulo,
-                'descricao' => $request->descricao,
-                'competencias' => $request->competencias,
-                'nivel_senioridade' => $request->nivel_senioridade,
-                'tipo_salario' => $request->tipo_salario,
-                'salario_minimo' => $request->salario_minimo ?? null,
-                'salario_maximo' => $request->salario_maximo ?? null,
-                'status' => $request->status,
-                'data_final' => $request->data_final 
-            ]);
+            // Atualiza apenas os campos que foram enviados na requisição
+            $vaga->update($request->only(['headhunter_id', 'admin_id', 'empresa_id', 'profissao_id', 'titulo', 'descricao', 'competencias', 'nivel_senioridade', 'tipo_salario', 'salario_minimo', 'salario_maximo', 'status', 'data_final']));
 
             DB::commit();
 
             return response()->json([
-                'status' => true,
-                'message' => 'Vaga Atualizada com Sucesso'
+                'success' => true,
+                'message' => 'Vaga atualizada com sucesso'
             ], 200);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'status' => false,
-                'message' => 'Erro ao atualizar a vaga' . $e->getMessage()
+                'success' => false,
+                'message' => 'Erro ao atualizar a vaga: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -126,30 +133,25 @@ class VagasController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deleteVaga(string $id)
     {
-        try{
-            
+        try {
             DB::beginTransaction();
 
-            $vaga = Vagas::find($id);
-
-           
+            $vaga = Vagas::findOrFail($id);
             $vaga->delete();
 
             DB::commit();
 
             return response()->json([
-                'status' => true,
+                'success' => true,
                 'message' => 'Vaga deletada com sucesso'
             ], 200);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
-                'status' => false,
-                'message' => 'Erro ao deletar a vaga' . $e->getMessage()
+                'success' => false,
+                'message' => 'Erro ao deletar a vaga: ' . $e->getMessage()
             ], 500);
-
         }
     }
 }

@@ -21,12 +21,12 @@ class SendEmailController extends Controller
             Mail::to($email)->send(new SendEmail($nome, $assunto, $email, $mensagem));
 
             return response()->json([
-                'status' => true,
+                'success' => true,
                 'message' => 'E-mail enviado com sucesso!'
             ], 201);
         } catch (Exception $e) {
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => 'Erro ao enviar e-mail: ' . $e->getMessage()
             ]);
         }
