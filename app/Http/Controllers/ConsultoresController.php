@@ -97,6 +97,7 @@ class ConsultoresController extends Controller
                 'logradouro' => $request->logradouro,
                 'numero' => $request->numero,
                 'cidade' => $request->cidade,
+                'bairro' => $request->bairro,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'estado' => $request->estado,
@@ -143,7 +144,7 @@ class ConsultoresController extends Controller
             // Atualiza apenas os campos que foram enviados na requisição
             $user->update($request->only([
               'nome', 'sobrenome', 'email', 'cep', 'logradouro', 'numero',
-                'cidade','latitude','longitude', 'estado', 'celular_1', 'celular_2', 'data_nascimento', 'linkedin'
+                'cidade','bairro','latitude','longitude', 'estado', 'celular_1', 'celular_2', 'data_nascimento', 'linkedin'
             ]));
 
             $consultor->update($request->only(['cargo','atividades', ]));

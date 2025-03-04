@@ -77,6 +77,14 @@ class HeadhuntersController extends Controller
                 $fotoUsuario = $filePath;
             }
 
+            if ($request->hasFile('cv')) {
+                $file = $request->file('cv');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName); // Salva o arquivo na pasta storage/app/public/uploads
+                $cv = $filePath;
+            }
+
             $usuario = User::create([
                 'tipo_usuario' => $request->tipo_usuario,
                 'foto_usuario' => $fotoUsuario,
@@ -87,6 +95,7 @@ class HeadhuntersController extends Controller
                 'logradouro' => $request->logradouro,
                 'numero' => $request->numero,
                 'cidade' => $request->cidade,
+                'bairro' => $request->bairro,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'estado' => $request->estado,
@@ -108,6 +117,7 @@ class HeadhuntersController extends Controller
                 'dias_semanais' => $request->dias_semanais,
                 'nivel_senioridade' => $request->nivel_senioridade,
                 'segmento' => $request->segmento,
+                'cv' => $cv,
             ]);
 
             DB::commit();
@@ -141,6 +151,7 @@ class HeadhuntersController extends Controller
                 'logradouro',
                 'numero',
                 'cidade',
+                'bairro',
                 'latitude',
                 'longitude',
                 'estado',

@@ -18,5 +18,11 @@ class ChamadosAtualizacoes extends Model
     ];
 
     protected $table = 'chamado_atualizacoes';
+
+    public function chamado(){
+        return $this->belongsTo(Chamados::class, 'chamados_id');
+    }
     
 }
+
+

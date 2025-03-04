@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfissoesController;
 use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\VagasController;
 use App\Http\Controllers\ChamadoAtualizacoesController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -100,8 +101,9 @@ Route::prefix('chamados-atualizacoes')->group(function () {
     Route::delete('/{id}', [ChamadoAtualizacoesController::class, 'deleteAtualizacao']);
 });
 
-Route::post('/login', [LoginController::class, 'login']);
 
+Route::get('/users', [UsersController::class, 'getAllUsers']);
+Route::post('/login', [LoginController::class, 'login']);
 
 //Enviar Email
 Route::post('/sendEmail', [SendEmailController::class, 'sendEmail']);

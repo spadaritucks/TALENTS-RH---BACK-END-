@@ -58,8 +58,8 @@ class CandidatosRequest extends FormRequest
             'como_conheceu' => 'required|string|max:255',
             'consultor_talents' => 'required|string|max:100',
             'nivel_ingles' => 'required|string|max:50',
-            'qualificacoes_tecnicas' => 'nullable|string',
-            'certificacoes' => 'nullable|string',
+            'qualificacoes_tecnicas' => 'required|string',
+            'certificacoes' => 'required|string',
             'password' => 'required|string|min:6',
         ];
     }

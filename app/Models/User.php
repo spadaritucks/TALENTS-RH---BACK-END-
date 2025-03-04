@@ -28,6 +28,7 @@ class User extends Authenticatable
         'logradouro',
         'numero',
         'cidade',
+        'bairro',
         'latitude',
         'longitude',
         'estado',
@@ -60,4 +61,32 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function empresa()
+    {
+        return $this->hasOne(Empresas::class, 'user_id');
+    }
+
+    public function headhunter(){
+        return $this->hasOne(Headhunters::class, 'user_id');
+    }
+
+    public function candidatos() {
+        return $this->hasOne(Candidatos::class, 'user_id');
+    }
+
+    public function admins() {
+        return $this->hasOne(Admins::class, 'user_id');
+    }
+
+    public function consultores() {
+        return $this->hasOne(Consultores::class, 'user_id');
+    }
+// ... 
+
+
+
+    
+
+
 }

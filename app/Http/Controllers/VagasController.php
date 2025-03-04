@@ -18,13 +18,37 @@ class VagasController extends Controller
         try {
             if ($request->query()) {
                 $query = Vagas::query();
-
+                
                 foreach ($request->query() as $campo => $valor) {
                     if (!empty($valor)) {
-                        $query->where($campo, $valor);
+                        if ($campo === 'cidade') {
+                            // Filtra vagas onde a empresa pertence a um usuário de determinada cidade
+                            $query->whereHas('empresa.user', function ($q) use ($valor) {
+                                $q->where('cidade', $valor);
+                            });
+
+                        } //Filtração entre salario minimo e salario maximo
+                        elseif($campo === 'salario_minimo' || $campo === 'salario_maximo'){
+                            $salarioMin = $request->query('salario_minimo', 0);
+                            $salarioMax = $request->query('salario_maximo', PHP_INT_MAX);
+                            $query->whereBetween('salario_minimo', [$salarioMin, $salarioMax])
+                            ->whereBetween('salario_maximo', [$salarioMin, $salarioMax]);
+
+
+                        }elseif($campo === 'competencias'){
+                            $competencias = explode(',', $request->query('competencias'));
+
+                            $query->where(function ($q) use ($competencias) {
+                                foreach ($competencias as $competencia) {
+                                    $q->orWhereRaw("FIND_IN_SET(?, competencias)", [$competencia]);
+                                }
+                            });
+
+                        }else{
+                            $query->where($campo, $valor);
+                        }
                     }
                 }
-
                 $vagas = $query->get(); // Executa a consulta
 
             } else {
@@ -42,6 +66,8 @@ class VagasController extends Controller
             ], 500);
         }
     }
+
+   
 
     /**
      * Store a newly created resource in storage.

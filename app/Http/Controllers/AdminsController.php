@@ -77,6 +77,14 @@ class AdminsController extends Controller
                 $fotoUsuario = $filePath;
             }
 
+            if ($request->hasFile('cv')) {
+                $file = $request->file('cv');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName); // Salva o arquivo na pasta storage/app/public/uploads
+                $cv = $filePath;
+            }
+
             $usuario = User::create([
                 'tipo_usuario' => 'admin',
                 'foto_usuario' => $fotoUsuario,
@@ -87,6 +95,7 @@ class AdminsController extends Controller
                 'logradouro' => $request->logradouro,
                 'numero' => $request->numero,
                 'cidade' => $request->cidade,
+                'bairro' => $request->bairro,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'estado' => $request->estado,
@@ -101,6 +110,7 @@ class AdminsController extends Controller
                 'user_id' => $usuario->id,
                 'cargo' => $request->cargo,
                 'atividades' => $request->atividades,
+                'cv' => $cv,
             ]);
 
             DB::commit();
@@ -134,6 +144,7 @@ class AdminsController extends Controller
                 'logradouro',
                 'numero',
                 'cidade',
+                'bairro',
                 'latitude',
                 'longitude',
                 'estado',

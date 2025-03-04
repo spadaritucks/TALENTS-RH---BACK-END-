@@ -25,4 +25,14 @@ class Candidatos extends Model
         'certificacoes',
         'cv',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function processo()
+    {
+        return $this->hasMany(Processos::class, 'candidato_id');
+    }
 }

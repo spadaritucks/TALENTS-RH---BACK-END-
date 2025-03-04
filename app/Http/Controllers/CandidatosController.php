@@ -71,6 +71,14 @@ class CandidatosController extends Controller
         try {
             DB::beginTransaction();
 
+            if ($request->hasFile('cv')) {
+                $file = $request->file('cv');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName); // Salva o arquivo na pasta storage/app/public/uploads
+                $cv = $filePath;
+            }
+
             if ($request->hasFile('foto_usuario')) {
                 $file = $request->file('foto_usuario');
                 $fileName = time() . '_' . $file->getClientOriginalName();
@@ -89,6 +97,7 @@ class CandidatosController extends Controller
                 'logradouro' => $request->logradouro,
                 'numero' => $request->numero,
                 'cidade' => $request->cidade,
+                'bairro' => $request->bairro,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'estado' => $request->estado,
@@ -113,6 +122,7 @@ class CandidatosController extends Controller
                 'nivel_ingles' => $request->nivel_ingles,
                 'qualificacoes_tecnicas' => $request->qualificacoes_tecnicas,
                 'certificacoes' => $request->certificacoes,
+                'cv' => $cv,
             ]);
 
             DB::commit();
@@ -146,6 +156,7 @@ class CandidatosController extends Controller
                 'logradouro',
                 'numero',
                 'cidade',
+                'bairro',
                 'latitude',
                 'longitude',
                 'estado',

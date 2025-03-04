@@ -17,4 +17,15 @@ class Empresas extends Model
         'segmento',
         'numero_funcionarios',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function vagas()
+    {
+        return $this->hasMany(Vagas::class, 'empresa_id');
+    }
+
 }

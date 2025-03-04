@@ -14,4 +14,12 @@ class Processos extends Model
         'vaga_id',
         'status',
     ];
+
+    public function candidato() {
+        return $this->belongsTo(Candidatos::class, 'candidato_id');
+    }
+
+    public function vaga(){
+        return $this->belongsTo(Vagas::class, 'vaga_id');
+    }
 }
