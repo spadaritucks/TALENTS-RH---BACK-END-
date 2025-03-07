@@ -16,34 +16,30 @@ class CandidatosController extends Controller
     public function getCandidatos(Request $request)
     {
         try {
-
-            if ($request->query()) {
-                $query = User::query()->where('tipo_usuario', 'candidato');
-
-                foreach ($request->query() as $campo => $valor) {
-                    if (!empty($valor)) {
-                        $query->where($campo, $valor);
-                    }
+            $query = User::where('tipo_usuario', 'candidato');
+    
+            foreach ($request->query() as $campo => $valor) {
+                if (!empty($valor)) {
+                    match ($campo) {
+                        'qualificacoes_tecnicas' => $query->whereHas('candidato', function ($q) use ($valor) {
+                            $qualificacoes = explode(',', $valor);
+                            foreach ($qualificacoes as $qualificacao) {
+                                $q->orWhereRaw("FIND_IN_SET(?, qualificacoes_tecnicas)", [$qualificacao]);
+                            }
+                        }),
+                        'pretensao_salarial_pj', 'pretensao_salarial_clt', 'graduacao_principal' => 
+                            $query->whereHas('candidato', fn($q) => $q->where($campo, $valor)),
+                        default => $query->where($campo, $valor),
+                    };
                 }
-
-                $users = $query->get(); // Executa a consulta
-                $candidatos = Candidatos::where('user_id', $users->first()->id)->get();
-            }else{
-                $users = User::where('tipo_usuario', 'candidato')->get();
-                $candidatos = Candidatos::all();
             }
-
-            return response()->json([
-                'success' => true,
-                'users' => $users,
-                'candidatos' => $candidatos,
-
-            ]);
+    
+            $users = $query->get();
+            $candidatos = Candidatos::whereIn('user_id', $users->pluck('id'))->get();
+    
+            return response()->json(['success' => true, 'users' => $users, 'candidatos' => $candidatos]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao listar os dados do usuário: ' . $e->getMessage()
-            ]);
+            return response()->json(['success' => false, 'message' => 'Erro ao listar os candidatos: ' . $e->getMessage()]);
         }
     }
 

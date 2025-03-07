@@ -71,16 +71,20 @@ class User extends Authenticatable
         return $this->hasOne(Headhunters::class, 'user_id');
     }
 
-    public function candidatos() {
+    public function candidato() {
         return $this->hasOne(Candidatos::class, 'user_id');
     }
 
-    public function admins() {
+    public function admin() {
         return $this->hasOne(Admins::class, 'user_id');
     }
 
-    public function consultores() {
+    public function consultor() {
         return $this->hasOne(Consultores::class, 'user_id');
+    }
+
+    public function chamado_atualizacoes() {
+        return $this->hasMany(ChamadosAtualizacoes::class, 'user_id');
     }
 // ... 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChamadoAtualizacoesRequest;
 use App\Http\Requests\ChamadosRequest; // Supondo que exista um request para validação
 use App\Models\ChamadosAtualizacoes;
 use Exception;
@@ -57,7 +58,7 @@ class ChamadoAtualizacoesController extends Controller
         }
     }
 
-    public function createAtualizacao(Request $request)
+    public function createAtualizacao(ChamadoAtualizacoesRequest $request)
     {
         try {
             DB::beginTransaction();

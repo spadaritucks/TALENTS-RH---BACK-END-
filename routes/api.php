@@ -93,7 +93,7 @@ Route::prefix('profissoes')->group(function () {
     Route::delete('/{id}', [ProfissoesController::class, 'deleteProfissao']);
 });
 
-Route::prefix('chamados-atualizacoes')->group(function () {
+Route::prefix('atualizacoes')->group(function () {
     Route::get('/', [ChamadoAtualizacoesController::class, 'getAtualizacoes']);
     Route::get('/{id}', [ChamadoAtualizacoesController::class, 'getAtualizacaoById']);
     Route::post('/', [ChamadoAtualizacoesController::class, 'createAtualizacao']);

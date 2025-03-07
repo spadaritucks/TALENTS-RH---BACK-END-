@@ -22,6 +22,10 @@ class ChamadosAtualizacoes extends Model
     public function chamado(){
         return $this->belongsTo(Chamados::class, 'chamados_id');
     }
+
+    public function user(){
+        return $this->belongsTo(Chamados::class, 'user_id');
+    }
     
 }
 

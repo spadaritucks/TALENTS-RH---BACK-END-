@@ -19,7 +19,7 @@ class ChamadoAtualizacoesRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'status' => false,
+            'sucesss' => false,
             'message' => $validator->errors(),
         ], 422));
     }
@@ -36,7 +36,8 @@ class ChamadoAtualizacoesRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'titulo' => 'required|string|max:255',
             'atualizacoes' => 'required|string|max:1000',
-            'anexo' => 'nullable|string|max:255',
+            'anexo' => 'nullable',
+            
         ];
     }
 }

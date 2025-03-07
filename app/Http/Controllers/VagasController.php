@@ -16,49 +16,35 @@ class VagasController extends Controller
     public function getVagas(Request $request)
     {
         try {
-            if ($request->query()) {
-                $query = Vagas::query();
-                
-                foreach ($request->query() as $campo => $valor) {
-                    if (!empty($valor)) {
-                        if ($campo === 'cidade') {
-                            // Filtra vagas onde a empresa pertence a um usuário de determinada cidade
-                            $query->whereHas('empresa.user', function ($q) use ($valor) {
-                                $q->where('cidade', $valor);
-                            });
-
-                        } //Filtração entre salario minimo e salario maximo
-                        elseif($campo === 'salario_minimo' || $campo === 'salario_maximo'){
-                            $salarioMin = $request->query('salario_minimo', 0);
-                            $salarioMax = $request->query('salario_maximo', PHP_INT_MAX);
-                            $query->whereBetween('salario_minimo', [$salarioMin, $salarioMax])
-                            ->whereBetween('salario_maximo', [$salarioMin, $salarioMax]);
-
-
-                        }elseif($campo === 'competencias'){
-                            $competencias = explode(',', $request->query('competencias'));
-
-                            $query->where(function ($q) use ($competencias) {
-                                foreach ($competencias as $competencia) {
-                                    $q->orWhereRaw("FIND_IN_SET(?, competencias)", [$competencia]);
-                                }
-                            });
-
-                        }else{
-                            $query->where($campo, $valor);
-                        }
-                    }
+            $query = Vagas::query();
+    
+            foreach ($request->query() as $campo => $valor) {
+                if (!empty($valor)) {
+                    match ($campo) {
+                        'cidade' => $query->whereHas('empresa.user', fn($q) => $q->where('cidade', $valor)),
+                        
+                        'salario_minimo', 'salario_maximo' => $query->whereBetween('salario_minimo', [
+                            $request->query('salario_minimo', 0),
+                            $request->query('salario_maximo', PHP_INT_MAX),
+                        ])->whereBetween('salario_maximo', [
+                            $request->query('salario_minimo', 0),
+                            $request->query('salario_maximo', PHP_INT_MAX),
+                        ]),
+    
+                        'competencias' => $query->where(function ($q) use ($valor) {
+                            foreach (explode(',', $valor) as $competencia) {
+                                $q->orWhereRaw("FIND_IN_SET(?, competencias)", [$competencia]);
+                            }
+                        }),
+    
+                        default => $query->where($campo, $valor),
+                    };
                 }
-                $vagas = $query->get(); // Executa a consulta
-
-            } else {
-                $vagas = Vagas::all();
             }
-
-            return response()->json([
-                'success' => true,
-                'vagas' => $vagas
-            ], 200);
+    
+            $vagas = $query->get();
+            
+            return response()->json(['success' => true, 'vagas' => $vagas], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -67,7 +53,6 @@ class VagasController extends Controller
         }
     }
 
-   
 
     /**
      * Store a newly created resource in storage.
