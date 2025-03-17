@@ -18,16 +18,16 @@ class ConsultoresController extends Controller
         try {
             if ($request->query()) {
                 $query = User::query();
-    
+
                 foreach ($request->query() as $campo => $valor) {
                     if (!empty($valor)) {
                         $query->where($campo, $valor);
                     }
                 }
-    
+
                 $users = $query->get(); // Executa a consulta
                 $consultores = Consultores::where('user_id', $users->first()->id)->get();
-            }else{
+            } else {
                 $users = User::where('tipo_usuario', 'consultor')->get();
                 $consultores = Consultores::all();
             }
@@ -57,13 +57,13 @@ class ConsultoresController extends Controller
                 'user' => $user,
                 'consultor' => $consultor,
 
-            ],200);
+            ], 200);
         } catch (Exception $e) {
 
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar o consultor pelo id' . $e
-            ],400);
+            ], 400);
         }
     }
 
@@ -79,7 +79,7 @@ class ConsultoresController extends Controller
                 Storage::disk('public')->putFileAs('uploads', $file, $fileName); // Salva o arquivo na pasta storage/app/public/uploads
                 $cv = $filePath;
             }
-            if($request->hasFile('foto_usuario')){
+            if ($request->hasFile('foto_usuario')) {
                 $file = $request->file('foto_usuario');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = 'uploads/' . $fileName;
@@ -140,25 +140,37 @@ class ConsultoresController extends Controller
             $user = User::findOrFail($id);
             $consultor = Consultores::where('user_id', $id)->firstOrFail();
 
-            
+
             // Atualiza apenas os campos que foram enviados na requisição
             $user->update($request->only([
-              'nome', 'sobrenome', 'email', 'cep', 'logradouro', 'numero',
-                'cidade','bairro','latitude','longitude', 'estado', 'celular_1', 'celular_2', 'data_nascimento', 'linkedin'
+                'nome',
+                'sobrenome',
+                'email',
+                'cep',
+                'logradouro',
+                'numero',
+                'cidade',
+                'bairro',
+                'latitude',
+                'longitude',
+                'estado',
+                'celular_1',
+                'celular_2',
+                'data_nascimento',
+                'linkedin'
             ]));
 
-            $consultor->update($request->only(['cargo','atividades', ]));
-
-            if($request->hasfile('foto_usuario')){
-                $file = $request->file('cv');
+            if ($request->hasFile('foto_usuario')) {
+                $file = $request->file('foto_usuario');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = 'uploads/' . $fileName;
                 Storage::disk('public')->putFileAs('uploads', $file, $fileName);
-
-                $user->update([
-                    'foto_usuario' => $filePath
-                ]);
+                $user->update(['foto_usuario' => $filePath]);
             }
+
+            $consultor->update($request->only(['cargo', 'atividades',]));
+
+
 
             // Atualiza o arquivo de CV, se enviado
             if ($request->hasFile('cv')) {
@@ -178,7 +190,6 @@ class ConsultoresController extends Controller
                 'success' => true,
                 'message' => 'Consultor atualizado com sucesso'
             ], 200);
-            
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([

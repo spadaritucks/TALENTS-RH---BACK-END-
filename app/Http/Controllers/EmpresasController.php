@@ -87,6 +87,7 @@ class EmpresasController extends Controller
                 'logradouro' => $request->logradouro,
                 'numero' => $request->numero,
                 'cidade' => $request->cidade,
+                'bairro' => $request->bairro,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'estado' => $request->estado,
@@ -112,6 +113,7 @@ class EmpresasController extends Controller
                 'success' => true,
                 'message' => 'Empresa cadastrada com sucesso'
             ], 201);
+
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -133,6 +135,14 @@ class EmpresasController extends Controller
                 'nome', 'sobrenome', 'email', 'cep', 'logradouro', 'numero',
                 'cidade', 'latitude', 'longitude', 'estado', 'celular_1', 'celular_2', 'data_nascimento', 'linkedin'
             ]));
+
+            if ($request->hasFile('foto_usuario')) {
+                $file = $request->file('foto_usuario');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $user->update(['foto_usuario' => $filePath]);
+            }
 
             $empresa->update($request->only([
                 'cnpj', 'razao_social', 'nome_fantasia', 'segmento', 'numero_funcionarios'

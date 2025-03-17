@@ -162,6 +162,17 @@ class CandidatosController extends Controller
                 'linkedin'
             ]));
 
+            
+            if ($request->hasFile('foto_usuario')) {
+                $file = $request->file('foto_usuario');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $user->update(['foto_usuario' => $filePath]);
+            }
+
+
+
             $candidato->update($request->only([
                 'ultimo_cargo',
                 'ultimo_salario',
@@ -176,6 +187,14 @@ class CandidatosController extends Controller
                 'qualificacoes_tecnicas',
                 'certificacoes'
             ]));
+
+            if ($request->hasFile('cv')) {
+                $file = $request->file('cv');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $candidato->update(['cv' => $filePath]);
+            }
 
             DB::commit();
 

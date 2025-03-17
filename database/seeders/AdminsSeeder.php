@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Admins;
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Hash;
 
 class AdminsSeeder extends Seeder
 {
@@ -15,38 +16,33 @@ class AdminsSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        $user = User::create([
+            'tipo_usuario' => 'admin',
+            'foto_usuario' => 'caminho/para/foto.jpg',
+            'nome' => 'Thiago Henrique',
+            'sobrenome' => 'Spadari de Oliveira',
+            'email' => 'thiago.spadari02@gmail.com',
+            'cep' => '09725140',
+            'logradouro' => 'Rua Leiria',
+            'numero' => '3',
+            'cidade' => 'São Bernardo do Campo',
+            'bairro' => 'Vila Lusitânia',
+            'latitude' => -23.71130615,
+            'longitude' => -46.557337149999995,
+            'estado' => 'SP',
+            'celular_1' => '(11) 960599793',
+            'celular_2' => '(11) 960599793',
+            'data_nascimento' => '2002-11-29',
+            'linkedin' => 'https://www.linkedin.com/in/thiago-spadari-41b95120b/',
+            'password' =>  Hash::make('titi9632'),
+        ]);
 
-        for ($i = 0; $i < 10; $i++) {
-            // Criar um usuário
-            $user = User::create([
-                'tipo_usuario' => 'admin',
-                'foto_usuario' => $faker->imageUrl(),
-                'nome' => $faker->firstName(),
-                'sobrenome' => $faker->lastName(),
-                'email' => $faker->unique()->safeEmail(),
-                'cep' => $faker->postcode(),
-                'logradouro' => $faker->streetAddress(),
-                'numero' => $faker->buildingNumber(),
-                'cidade' => $faker->city(),
-                'bairro' => $faker->word(),
-                'latitude' => $faker->latitude(),
-                'longitude' => $faker->longitude(),
-                'estado' => $faker->state(),
-                'celular_1' => $faker->phoneNumber(),
-                'celular_2' => $faker->phoneNumber(),
-                'data_nascimento' => $faker->date(),
-                'linkedin' => $faker->url(),
-                'password' => bcrypt('password'), // Senha padrão
-            ]);
-
-            // Criar um admin associado ao usuário
-            Admins::create([
-                'user_id' => $user->id,
-                'cargo' => $faker->word(),
-                'atividades' => $faker->sentence(),
-                'cv' => $faker->text(),
-            ]);
-        }
+        // Criar um admin associado ao usuário
+        Admins::create([
+            'user_id' => $user->id,
+            'cargo' => 'Desenvolvedor Full Stack',
+            'atividades' => 'Responsavel geral pelo sistema da talents hub',
+            'cv' => 'caminho/para/cv.pdf',
+        ]);
     }
 }

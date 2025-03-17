@@ -154,6 +154,14 @@ class AdminsController extends Controller
                 'linkedin'
             ]));
 
+            if ($request->hasFile('foto_usuario')) {
+                $file = $request->file('foto_usuario');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $user->update(['foto_usuario' => $filePath]);
+            }
+
             $admin->update($request->only(['cargo', 'atividades']));
 
             DB::commit();

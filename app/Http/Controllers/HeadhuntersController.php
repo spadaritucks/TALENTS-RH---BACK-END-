@@ -161,6 +161,14 @@ class HeadhuntersController extends Controller
                 'linkedin'
             ]));
 
+            if ($request->hasFile('foto_usuario')) {
+                $file = $request->file('foto_usuario');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $user->update(['foto_usuario' => $filePath]);
+            }
+
             $headhunter->update($request->only([
                 'como_conheceu',
                 'situacao',
@@ -172,6 +180,15 @@ class HeadhuntersController extends Controller
                 'nivel_senioridade',
                 'segmento'
             ]));
+
+            
+            if ($request->hasFile('cv')) {
+                $file = $request->file('cv');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $headhunter->update(['cv' => $filePath]);
+            }
 
             DB::commit();
 
