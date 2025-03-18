@@ -12,6 +12,7 @@ class Chamados extends Model
     protected $fillable = [
         'empresa_id',
         'profissao_id',
+        'headhunter_id',
         'numero_vagas',
         'descricao',
         'status'

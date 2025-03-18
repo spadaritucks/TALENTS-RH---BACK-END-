@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('vagas', function (Blueprint $table) {
-            $table->string('tipo_salario')->after('nivel_senioridade');
+        Schema::table('chamados', function (Blueprint $table) {
+            $table->foreignId('headhunter_id')->nullable()->change();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('vagas', function (Blueprint $table) {
+        Schema::table('chamados', function (Blueprint $table) {
             //
         });
     }

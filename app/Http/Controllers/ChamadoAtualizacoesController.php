@@ -8,6 +8,7 @@ use App\Models\ChamadosAtualizacoes;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ChamadoAtualizacoesController extends Controller
 {
@@ -63,12 +64,20 @@ class ChamadoAtualizacoesController extends Controller
         try {
             DB::beginTransaction();
 
+            if ($request->hasFile('anexo')) {
+                $file = $request->file('anexo');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $anexo = $filePath;
+            }
+
             ChamadosAtualizacoes::create([
                 'chamados_id' => $request->chamados_id,
                 'user_id' => $request->user_id,
                 'titulo' => $request->titulo,
                 'atualizacoes' => $request->atualizacoes,
-                'anexo' => $request->anexo,
+                'anexo' => $anexo,
             ]);
 
             DB::commit();
@@ -96,7 +105,17 @@ class ChamadoAtualizacoesController extends Controller
             // Atualiza apenas os campos que foram enviados na requisição
             $atualizacao->update($request->only(['chamados_id', 'user_id', 'titulo', 'atualizacoes', 'anexo']));
 
+            
+            if ($request->hasFile('anexo')) {
+                $file = $request->file('anexo');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'uploads/' . $fileName;
+                Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+                $atualizacao->update(['anexo' => $filePath]);
+            }
+
             DB::commit();
+
 
             return response()->json([
                 'success' => true,

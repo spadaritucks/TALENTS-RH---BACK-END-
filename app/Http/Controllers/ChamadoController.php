@@ -93,7 +93,7 @@ class ChamadoController extends Controller
             $chamado = Chamados::findOrFail($id);
 
             // Atualiza apenas os campos que foram enviados na requisição
-            $chamado->update($request->only(['empresa_id', 'profissao_id', 'numero_vagas', 'descricao', 'status']));
+            $chamado->update($request->only(['empresa_id', 'profissao_id','headhunter_id', 'numero_vagas', 'descricao', 'status']));
 
             DB::commit();
 

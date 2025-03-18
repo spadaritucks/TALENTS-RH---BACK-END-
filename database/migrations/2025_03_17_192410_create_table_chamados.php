@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('chamados', function (Blueprint $table) {
             $table->id();
-            $table->string('empresa_id');
-            $table->string('profissional_desejado');
+            $table->foreignId('empresa_id')->constrained('empresas')->onDelete('cascade');
+            $table->foreignId('profissao_id')->constrained('profissoes')->onDelete('cascade');
+            $table->foreignId('headhunter_id')->constrained('headhunters')->onDelete('cascade');
+            $table->string('descricao');
             $table->string('numero_vagas');
             $table->string('status')->nullable();
             $table->timestamps();
@@ -24,6 +26,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('chamados_id')->constrained('chamados')->onDelete('cascade');
             $table->foreignId('headhunter_id')->constrained('headhunters')->onDelete('cascade');
+            $table->string('titulo');
+            $table->string('anexo');
             $table->text('atualizacoes');
             $table->timestamps();
         });
